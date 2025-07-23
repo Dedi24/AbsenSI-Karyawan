@@ -39,7 +39,9 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('admin.absensis.report') }}">
+                                <a class="nav-link {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}"
+                                   href="{{ route('admin.reports.index') }}">
+                                {{-- <a class="nav-link" href="{{ route('admin.reports.index') }}"> --}}
                                     <i class="bi bi-file-earmark-bar-graph"></i> Laporan
                                 </a>
                             </li>

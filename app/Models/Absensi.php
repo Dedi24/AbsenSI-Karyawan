@@ -19,11 +19,8 @@ class Absensi extends Model
         'location_out',
     ];
 
-
     protected $casts = [
         'date' => 'date',
-        'check_in' => 'datetime:H:i:s',
-        'check_out' => 'datetime:H:i:s',
     ];
 
     public function user()
@@ -31,30 +28,53 @@ class Absensi extends Model
         return $this->belongsTo(User::class);
     }
 
-     // Accessor untuk format waktu masuk
+    // Accessor untuk mendapatkan jam kerja
+    public function getWorkingHoursAttribute()
+    {
+        if ($this->check_in && $this->check_out) {
+            // Konversi waktu ke format yang bisa dihitung
+            $checkInTime = substr($this->check_in, 0, 5);
+            $checkOutTime = substr($this->check_out, 0, 5);
+
+            // Parse waktu
+            $checkIn = \DateTime::createFromFormat('H:i', $checkInTime);
+            $checkOut = \DateTime::createFromFormat('H:i', $checkOutTime);
+
+            if ($checkIn && $checkOut) {
+                // Jika jam pulang lebih kecil dari jam masuk (melewati tengah malam)
+                if ($checkOut < $checkIn) {
+                    $checkOut->modify('+1 day');
+                }
+
+                $interval = $checkIn->diff($checkOut);
+                $hours = $interval->h;
+                $minutes = $interval->i;
+
+                if ($hours > 0) {
+                    return $hours . 'h ' . $minutes . 'm';
+                } else {
+                    return $minutes . 'm';
+                }
+            }
+        }
+        return '-';
+    }
+
+    // Accessor untuk format waktu masuk
     public function getCheckInFormattedAttribute()
     {
         if ($this->check_in) {
-            try {
-                return \Carbon\Carbon::createFromFormat('H:i:s', $this->check_in)->format('H:i');
-            } catch (\Exception $e) {
-                return $this->check_in;
-            }
+            return substr($this->check_in, 0, 5);
         }
-        return '0';
+        return '-';
     }
 
     // Accessor untuk format waktu pulang
     public function getCheckOutFormattedAttribute()
     {
         if ($this->check_out) {
-            try {
-                return \Carbon\Carbon::createFromFormat('H:i:s', $this->check_out)->format('H:i');
-            } catch (\Exception $e) {
-                return $this->check_out;
-            }
+            return substr($this->check_out, 0, 5);
         }
-        return '0';
+        return '-';
     }
-
 }

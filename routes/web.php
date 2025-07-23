@@ -5,8 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\EmployeeController;
-use App\Http\Controllers\Admin\AbsensiController as AdminAttendanceController;
-use App\Http\Controllers\Admin\AbsensiController;
+use App\Http\Controllers\Admin\AbsensisController as AdminAbsensisController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Karyawan\DashboardController as KaryawanDashboardController;
@@ -22,14 +21,18 @@ Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth'])->group(function () {
-    // Admin Routes
+        // Admin Routes
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
         Route::resource('employees', EmployeeController::class);
-        Route::get('/absensis', [AbsensiController::class, 'index'])->name('absensis.index');
-        // Route::get('/absensis/report', [AbsensiController::class, 'report'])->name('absensis.report'); // Perbaikan route
+        Route::get('/absensis', [AdminAbsensisController::class, 'index'])->name('absensis.index');
+        Route::get('/absensis/raport', [AdminAbsensisController::class, 'raport'])->name('absensis.raport');
+
+        // Report Routes
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
         Route::post('/reports/generate', [ReportController::class, 'generate'])->name('reports.generate');
+        Route::get('/reports/export-all', [ReportController::class, 'exportAll'])->name('reports.export-all');
+
         Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
         Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
     });
