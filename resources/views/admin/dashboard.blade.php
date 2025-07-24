@@ -37,8 +37,11 @@
 <div class="row">
     <div class="col-md-12">
         <div class="card">
-            <div class="card-header">
-                <h5>Absensi Hari Ini</h5>
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5>Absensi Hari Ini - {{ now()->timezone('Asia/Jakarta')->isoFormat('dddd, D MMMM YYYY') }}</h5>
+                <a href="{{ route('admin.absensis.raport') }}" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-file-earmark-bar-graph"></i> Laporan
+                </a>
             </div>
             <div class="card-body">
                 <table class="table table-striped">
@@ -54,8 +57,8 @@
                         @foreach(App\Models\Absensi::where('date', today())->with('user')->get() as $absensi)
                         <tr>
                             <td>{{ $absensi->user->name }}</td>
-                            <td>{{ $absensi->check_in ?? '-' }}</td>
-                            <td>{{ $absensi->check_out ?? '-' }}</td>
+                            <td>{{ $absensi->check_in_formatted }}</td>
+                            <td>{{ $absensi->check_out_formatted }}</td>
                             <td>
                                 <span class="badge bg-{{ $absensi->status == 'hadir' ? 'success' : ($absensi->status == 'alpha' ? 'danger' : 'warning') }}">
                                     {{ ucfirst($absensi->status) }}

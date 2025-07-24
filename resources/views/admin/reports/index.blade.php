@@ -134,24 +134,28 @@
                         <div class="text-center p-3 bg-light rounded">
                             <h4>{{ App\Models\Absensi::where('date', today())->where('status', 'hadir')->count() }}</h4>
                             <small>Hadir Hari Ini</small>
+                            <div class="text-muted">{{ now()->timezone('Asia/Jakarta')->isoFormat('D MMM YYYY') }}</div>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="text-center p-3 bg-light rounded">
                             <h4>{{ App\Models\Absensi::where('date', today())->where('status', 'alpha')->count() }}</h4>
                             <small>Tidak Hadir Hari Ini</small>
+                            <div class="text-muted">{{ now()->timezone('Asia/Jakarta')->isoFormat('D MMM YYYY') }}</div>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="text-center p-3 bg-light rounded">
                             <h4>{{ App\Models\Absensi::whereMonth('date', now()->month)->where('status', 'hadir')->count() }}</h4>
                             <small>Hadir Bulan Ini</small>
+                            <div class="text-muted">{{ now()->timezone('Asia/Jakarta')->isoFormat('MMMM YYYY') }}</div>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="text-center p-3 bg-light rounded">
                             <h4>{{ App\Models\User::where('role', 'karyawan')->count() }}</h4>
                             <small>Total Karyawan</small>
+                            <div class="text-muted">Aktif</div>
                         </div>
                     </div>
                 </div>

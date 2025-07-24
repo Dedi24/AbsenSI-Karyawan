@@ -5,6 +5,9 @@
 @section('content')
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2">Dashboard Karyawan</h1>
+    <div class="text-muted">
+        {{ now()->timezone('Asia/Jakarta')->isoFormat('dddd, D MMMM YYYY') }}
+    </div>
 </div>
 
 <div class="row">
@@ -45,29 +48,73 @@
                     $todayAbsensi = Auth::user()->absensis()->where('date', today())->first();
                 @endphp
 
+                @if(session('success'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="bi bi-check-circle"></i> {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                @endif
+
+                @if(session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle"></i> {{ session('error') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                @endif
+
                 @if(!$todayAbsensi || !$todayAbsensi->check_in)
-                    <a href="{{ route('karyawan.absensi.store', ['type' => 'in']) }}"
-                       class="btn btn-success"
-                       onclick="event.preventDefault(); document.getElementById('absen-form-in').submit();">
-                        <i class="bi bi-box-arrow-in-right"></i> Absen Masuk
-                    </a>
-                    <form id="absen-form-in" action="{{ route('karyawan.absensi.store') }}" method="POST" class="d-none">
-                        @csrf
-                        <input type="hidden" name="type" value="in">
-                    </form>
+                    <div class="d-grid gap-3">
+                        <a href="{{ route('karyawan.absensi.fingerprint') }}" class="btn btn-success btn-lg">
+                            <i class="bi bi-fingerprint"></i> Absen Masuk dengan Fingerprint
+                        </a>
+                        <div class="text-center">
+                            <small class="text-muted">Atau pilih metode lain:</small>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <a href="{{ route('karyawan.absensi.qr-code') }}" class="btn btn-outline-primary">
+                                <i class="bi bi-qr-code-scan"></i> Absen dengan QR Code
+                            </a>
+                            <form action="{{ route('karyawan.absensi.store') }}" method="POST" class="d-inline">
+                                @csrf
+                                <input type="hidden" name="type" value="in">
+                                <input type="hidden" name="location" value="office">
+                                <button type="submit" class="btn btn-outline-success w-100">
+                                    <i class="bi bi-box-arrow-in-right"></i> Absen Masuk Manual
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 @elseif($todayAbsensi->check_in && !$todayAbsensi->check_out)
-                    <a href="{{ route('karyawan.absensi.store', ['type' => 'out']) }}"
-                       class="btn btn-danger"
-                       onclick="event.preventDefault(); document.getElementById('absen-form-out').submit();">
-                        <i class="bi bi-box-arrow-right"></i> Absen Pulang
-                    </a>
-                    <form id="absen-form-out" action="{{ route('karyawan.absensi.store') }}" method="POST" class="d-none">
-                        @csrf
-                        <input type="hidden" name="type" value="out">
-                    </form>
+                    <div class="d-grid gap-3">
+                        <a href="{{ route('karyawan.absensi.fingerprint') }}" class="btn btn-danger btn-lg">
+                            <i class="bi bi-fingerprint"></i> Absen Pulang dengan Fingerprint
+                        </a>
+                        <div class="text-center">
+                            <small class="text-muted">Atau pilih metode lain:</small>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <a href="{{ route('karyawan.absensi.qr-code') }}" class="btn btn-outline-primary">
+                                <i class="bi bi-qr-code-scan"></i> Absen dengan QR Code
+                            </a>
+                            <form action="{{ route('karyawan.absensi.store') }}" method="POST" class="d-inline">
+                                @csrf
+                                <input type="hidden" name="type" value="out">
+                                <input type="hidden" name="location" value="office">
+                                <button type="submit" class="btn btn-outline-danger w-100">
+                                    <i class="bi bi-box-arrow-right"></i> Absen Pulang Manual
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 @else
-                    <div class="alert alert-info">
-                        Anda sudah absen hari ini.
+                    <div class="alert alert-success text-center">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <h5>Anda sudah absen hari ini</h5>
+                        <p class="mb-0">
+                            Masuk: {{ $todayAbsensi->check_in_formatted }} |
+                            Pulang: {{ $todayAbsensi->check_out_formatted }}
+                        </p>
+                        <small class="text-muted">{{ now()->timezone('Asia/Jakarta')->isoFormat('dddd, D MMMM YYYY') }}</small>
                     </div>
                 @endif
             </div>

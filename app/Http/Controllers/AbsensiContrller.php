@@ -10,8 +10,10 @@ class AbsensiContrller extends Controller
 {
      public function index()
     {
-        $absensis = Absensi::where('user_id', Auth::id())->get();
-        return view('karyawan.absensi.index', compact('absensis'));
+         // Gunakan paginate() bukan get() untuk mendapatkan paginator
+        $absensis = Auth::user()->absensis()
+            ->orderBy('date', 'desc')
+            ->paginate(10); // 10 items per page
     }
 
     public function store(Request $request)
