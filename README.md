@@ -30,5 +30,5 @@ Aplikasi absensi karyawan modern dengan fitur lengkap berbasis Progressive Web A
 
 1. Clone repository
    ```bash
-   git clone https://github.com/USERNAME_ANDA/absensi-karyawan-laravel.git
-   cd absensi-karyawan-laravel
+   git clone https://github.com/USERNAME_ANDA/AbsenSI-Karyawan.git
+   cd AbsenSI-Karyawan
