@@ -74,4 +74,42 @@ class Setting extends Model
         return self::get('whatsapp_group', '');
     }
 
+    // Method helper untuk format waktu Indonesia
+    public static function formatTimeIndonesia($time)
+    {
+        if (!$time) return '-';
+
+        try {
+            $timeObj = \Carbon\Carbon::createFromFormat('H:i:s', $time);
+            return $timeObj->format('H:i');
+        } catch (\Exception $e) {
+            return $time;
+        }
+    }
+
+    // Method helper untuk format tanggal Indonesia
+    public static function formatDateIndonesia($date)
+    {
+        if (!$date) return '-';
+
+        try {
+            $dateObj = \Carbon\Carbon::parse($date);
+            return $dateObj->isoFormat('D MMMM YYYY');
+        } catch (\Exception $e) {
+            return $date;
+        }
+    }
+
+    // Method helper untuk format tanggal pendek Indonesia
+    public static function formatDateShortIndonesia($date)
+    {
+        if (!$date) return '-';
+
+        try {
+            $dateObj = \Carbon\Carbon::parse($date);
+            return $dateObj->isoFormat('D MMM YYYY');
+        } catch (\Exception $e) {
+            return $date;
+        }
+    }
 }

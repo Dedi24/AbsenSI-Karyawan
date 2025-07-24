@@ -15,7 +15,7 @@ class AbsensisController extends Controller
         return view('admin.absensis.index', compact('absensis'));
     }
 
-    public function report()
+    public function raport()
     {
         $employees = User::where('role', 'karyawan')->get();
         $absensis = collect();

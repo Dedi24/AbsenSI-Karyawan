@@ -23,6 +23,16 @@ class LoginController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
+            $user = Auth::user();
+
+            // Update device fingerprint dan login info
+            $deviceFingerprint = $this->generateDeviceFingerprint($request);
+            $user->update([
+                'last_login_ip' => $request->ip(),
+                'last_login_at' => now(),
+                'device_fingerprint' => $user->device_fingerprint ?? $deviceFingerprint
+            ]);
+
             if (Auth::user()->isAdmin()) {
                 return redirect()->intended(route('admin.dashboard'));
             } elseif (Auth::user()->isKaryawan()) {
@@ -42,5 +52,15 @@ class LoginController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/');
+    }
+
+    protected function generateDeviceFingerprint(Request $request)
+    {
+        $userAgent = $request->userAgent();
+        $ipAddress = $request->ip();
+        $acceptLanguage = $request->header('Accept-Language');
+
+        $deviceInfo = $userAgent . $ipAddress . $acceptLanguage;
+        return hash('sha256', $deviceInfo);
     }
 }

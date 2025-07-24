@@ -28,53 +28,63 @@ class Absensi extends Model
         return $this->belongsTo(User::class);
     }
 
-    // Accessor untuk mendapatkan jam kerja
+   // Accessor untuk mendapatkan jam kerja
     public function getWorkingHoursAttribute()
     {
         if ($this->check_in && $this->check_out) {
-            // Konversi waktu ke format yang bisa dihitung
-            $checkInTime = substr($this->check_in, 0, 5);
-            $checkOutTime = substr($this->check_out, 0, 5);
+            try {
+                $in = \Carbon\Carbon::createFromFormat('H:i:s', $this->check_in);
+                $out = \Carbon\Carbon::createFromFormat('H:i:s', $this->check_out);
+                return $out->diffInHours($in);
+            } catch (\Exception $e) {
+                return 0;
+            }
+        }
+        return 0;
+    }
 
-            // Parse waktu
-            $checkIn = \DateTime::createFromFormat('H:i', $checkInTime);
-            $checkOut = \DateTime::createFromFormat('H:i', $checkOutTime);
-
-            if ($checkIn && $checkOut) {
-                // Jika jam pulang lebih kecil dari jam masuk (melewati tengah malam)
-                if ($checkOut < $checkIn) {
-                    $checkOut->modify('+1 day');
-                }
-
-                $interval = $checkIn->diff($checkOut);
-                $hours = $interval->h;
-                $minutes = $interval->i;
-
-                if ($hours > 0) {
-                    return $hours . 'h ' . $minutes . 'm';
-                } else {
-                    return $minutes . 'm';
-                }
+    // Accessor untuk format waktu masuk (Indonesia)
+    public function getCheckInFormattedAttribute()
+    {
+        if ($this->check_in) {
+            try {
+                return \Carbon\Carbon::createFromFormat('H:i:s', $this->check_in)->format('H:i');
+            } catch (\Exception $e) {
+                return $this->check_in;
             }
         }
         return '-';
     }
 
-    // Accessor untuk format waktu masuk
-    public function getCheckInFormattedAttribute()
+    // Accessor untuk format waktu pulang (Indonesia)
+    public function getCheckOutFormattedAttribute()
     {
-        if ($this->check_in) {
-            return substr($this->check_in, 0, 5);
+        if ($this->check_out) {
+            try {
+                return \Carbon\Carbon::createFromFormat('H:i:s', $this->check_out)->format('H:i');
+            } catch (\Exception $e) {
+                return $this->check_out;
+            }
         }
         return '-';
     }
 
-    // Accessor untuk format waktu pulang
-    public function getCheckOutFormattedAttribute()
+    // Accessor untuk format tanggal lengkap (Indonesia)
+    public function getDateFormattedAttribute()
     {
-        if ($this->check_out) {
-            return substr($this->check_out, 0, 5);
-        }
-        return '-';
+        return \Carbon\Carbon::parse($this->date)->isoFormat('D MMMM YYYY');
     }
+
+    // Accessor untuk format tanggal pendek (Indonesia)
+    public function getDateShortFormattedAttribute()
+    {
+        return \Carbon\Carbon::parse($this->date)->isoFormat('D MMM YYYY');
+    }
+
+    // Accessor untuk format hari (Indonesia)
+    public function getDayNameAttribute()
+    {
+        return \Carbon\Carbon::parse($this->date)->isoFormat('dddd');
+    }
+
 }

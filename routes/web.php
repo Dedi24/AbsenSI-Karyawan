@@ -25,6 +25,8 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
         Route::resource('employees', EmployeeController::class);
+        Route::post('/employees/{employee}/reset-device', [EmployeeController::class, 'resetDevice'])->name('employees.reset-device');
+        Route::get('/employees/{employee}/device', [EmployeeController::class, 'showDevice'])->name('employees.device');
         Route::get('/absensis', [AdminAbsensisController::class, 'index'])->name('absensis.index');
         Route::get('/absensis/raport', [AdminAbsensisController::class, 'raport'])->name('absensis.raport');
 
@@ -33,6 +35,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/reports/generate', [ReportController::class, 'generate'])->name('reports.generate');
         Route::get('/reports/export-all', [ReportController::class, 'exportAll'])->name('reports.export-all');
 
+        // Settings Routes
         Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
         Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
     });
@@ -41,6 +44,11 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:karyawan'])->prefix('karyawan')->name('karyawan.')->group(function () {
         Route::get('/dashboard', [KaryawanDashboardController::class, 'index'])->name('dashboard');
         Route::get('/absensi', [KaryawanAbsensiController::class, 'index'])->name('absensi.index');
+        Route::get('/absensi/qr-code', [KaryawanAbsensiController::class, 'qrCode'])->name('absensi.qr-code');
+        Route::get('/absensi/fingerprint', [KaryawanAbsensiController::class, 'fingerprint'])->name('absensi.fingerprint');
         Route::post('/absensi/store', [KaryawanAbsensiController::class, 'store'])->name('absensi.store');
+        Route::post('/absensi/scan-qr', [KaryawanAbsensiController::class, 'scanQRCode'])->name('absensi.scan-qr');
+        Route::post('/absensi/store-fingerprint', [KaryawanAbsensiController::class, 'storeFingerprint'])->name('absensi.store-fingerprint');
+        Route::post('/absensi/reset-device', [KaryawanAbsensiController::class, 'resetDevice'])->name('absensi.reset-device');
     });
 });

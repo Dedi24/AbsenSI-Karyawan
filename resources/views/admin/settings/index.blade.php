@@ -77,16 +77,19 @@
                         <label for="work_start_time" class="form-label">Jam Masuk Kerja</label>
                         <input type="time" class="form-control" id="work_start_time" name="work_start_time"
                                value="{{ old('work_start_time', substr($settings['work_start_time'], 0, 5)) }}" required>
+                        <small class="form-text text-muted">Format: HH:MM (Contoh: 08:00)</small>
                     </div>
 
                     <div class="mb-3">
                         <label for="work_end_time" class="form-label">Jam Pulang Kerja</label>
                         <input type="time" class="form-control" id="work_end_time" name="work_end_time"
                                value="{{ old('work_end_time', substr($settings['work_end_time'], 0, 5)) }}" required>
+                        <small class="form-text text-muted">Format: HH:MM (Contoh: 17:00)</small>
                     </div>
 
                     <div class="alert alert-info">
-                        <strong>Info:</strong> Jam kerja digunakan untuk menghitung keterlambatan dan lembur.
+                        <strong>Info:</strong> Jam kerja digunakan untuk menghitung keterlambatan dan lembur.<br>
+                        <strong>Waktu Server:</strong> {{ now()->timezone('Asia/Jakarta')->format('d F Y H:i:s') }} WIB
                     </div>
                 </div>
             </div>

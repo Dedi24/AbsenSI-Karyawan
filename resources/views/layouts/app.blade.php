@@ -10,6 +10,13 @@
         .sidebar {
             min-height: 100vh;
         }
+        .nav-link.active {
+            background-color: #0d6efd;
+            color: white !important;
+        }
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+        }
     </style>
 </head>
 <body>
@@ -41,13 +48,13 @@
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}"
                                    href="{{ route('admin.reports.index') }}">
-                                {{-- <a class="nav-link" href="{{ route('admin.reports.index') }}"> --}}
                                     <i class="bi bi-file-earmark-bar-graph"></i> Laporan
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('admin.settings.index')}}">
-                                    <i class="bi bi-file-earmark-bar-graph"></i> Pengaturan
+                                <a class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}"
+                                   href="{{ route('admin.settings.index') }}">
+                                    <i class="bi bi-gear"></i> Pengaturan
                                 </a>
                             </li>
                         @else
@@ -58,9 +65,21 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link {{ request()->routeIs('karyawan.absensi.*') ? 'active' : '' }}"
+                                <a class="nav-link {{ request()->routeIs('karyawan.absensi.index') ? 'active' : '' }}"
                                    href="{{ route('karyawan.absensi.index') }}">
-                                    <i class="bi bi-calendar-check"></i> Absensi
+                                    <i class="bi bi-list"></i> Riwayat Absensi
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('karyawan.absensi.qr-code') ? 'active' : '' }}"
+                                   href="{{ route('karyawan.absensi.qr-code') }}">
+                                    <i class="bi bi-qr-code-scan"></i> Absen QR Code
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('karyawan.absensi.fingerprint') ? 'active' : '' }}"
+                                   href="{{ route('karyawan.absensi.fingerprint') }}">
+                                    <i class="bi bi-fingerprint"></i> Absen Fingerprint
                                 </a>
                             </li>
                         @endif
@@ -85,6 +104,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     @yield('scripts')
 </body>
 </html>

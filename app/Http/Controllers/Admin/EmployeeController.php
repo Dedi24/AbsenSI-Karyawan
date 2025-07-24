@@ -68,4 +68,17 @@ class EmployeeController extends Controller
         $employee->delete();
         return redirect()->route('admin.employees.index')->with('success', 'Karyawan berhasil dihapus.');
     }
+
+    // Method untuk reset device fingerprint karyawan
+    public function resetDevice(User $employee)
+    {
+        $employee->resetDeviceFingerprint();
+        return redirect()->back()->with('success', 'Device fingerprint karyawan berhasil direset.');
+    }
+
+    // Method untuk melihat detail device
+    public function showDevice(User $employee)
+    {
+        return view('admin.employees.device', compact('employee'));
+    }
 }
