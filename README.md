@@ -32,3 +32,30 @@ Aplikasi absensi karyawan modern dengan fitur lengkap berbasis Progressive Web A
    ```bash
    git clone https://github.com/USERNAME_ANDA/AbsenSI-Karyawan.git
    cd AbsenSI-Karyawan
+
+2. Install dependencies
+    ```bash
+    composer install
+    npm install
+    npm run dev
+    
+3. Konfigurasi database
+    ```bash
+    cp .env.example .env
+    # Edit .env dan sesuaikan konfigurasi database
+    php artisan key:generate
+    
+4. Migrasi dan Seeder
+    ```bash
+    php artisan migrate --seed
+    
+5. Jalankan Aplikasi
+    ```bash
+    php artisan serve
+    
+## 🔐 Akun Default
+    Admin : admin@example.com / password
+    Karyawan 1 : karyawan1@example.com / password
+    Karyawan 2 : karyawan2@example.com / password
+
+   
