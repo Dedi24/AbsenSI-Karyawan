@@ -11,23 +11,27 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('absensis', function (Blueprint $table) {
+         Schema::create('absensis', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->date('date');
             $table->time('check_in')->nullable();
             $table->time('check_out')->nullable();
-            $table->enum('status', ['hadir', 'izin', 'sakit', 'alpha'])->default('alpha');
             $table->string('location_in')->nullable();
             $table->string('location_out')->nullable();
+            // Pastikan kolom status cukup panjang untuk menyimpan 'terlambat'
+            $table->enum('status', ['hadir', 'alpha', 'terlambat'])->default('alpha');
+            // Kolom untuk menyimpan durasi kerja jika dihitung
+            $table->decimal('working_hours', 5, 2)->nullable(); 
             $table->timestamps();
+
+            // Index untuk pencarian cepat
+            $table->unique(['user_id', 'date']);
+            $table->index('date');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('absensis');
     }

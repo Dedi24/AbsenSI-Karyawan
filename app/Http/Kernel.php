@@ -66,5 +66,6 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'role' => \App\Http\Middleware\RoleMiddleware::class,
         'device.fingerprint' => \App\Http\Middleware\DeviceFingerprintMiddleware::class,
+        'role' => \App\Http\Middleware\EnsureUserRole::class,
     ];
 }
