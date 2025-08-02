@@ -15,9 +15,6 @@ use App\Http\Controllers\Karyawan\ProfileController as KaryawanProfileController
 use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
 use App\Http\Controllers\Admin\LogController;
 
-Route::get('/', function () {
-    return redirect()->route('login');
-});
 
 // Authentication Routes
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -31,6 +28,7 @@ Route::get('/password/reset/{token}', [ResetPasswordController::class, 'showRese
 Route::post('/password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
 
 Route::middleware(['auth'])->group(function () {
+    
     // Admin Routes
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
@@ -74,4 +72,47 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/absensi/store-fingerprint', [KaryawanAbsensiController::class, 'storeFingerprint'])->name('absensi.store-fingerprint');
         Route::post('/absensi/reset-device', [KaryawanAbsensiController::class, 'resetDevice'])->name('absensi.reset-device');
     });
+});
+
+// Route untuk PWA offline
+Route::get('/pwa/offline', function () {
+    return view('pwa.offline');
+})->name('pwa.offline');
+
+// Route untuk PWA manifest
+Route::get('/manifest.json', function () {
+    return response()->json([
+        "name" => "Absensi Karyawan",
+        "short_name" => "Absensi",
+        "description" => "Aplikasi absensi karyawan offline",
+        "start_url" => "/",
+        "display" => "standalone",
+        "background_color" => "#ffffffff",
+        "theme_color" => "#4e73df",
+        "icons" => [
+            [
+                "src" => "/icons/icon-192x192.png",
+                "sizes" => "192x192",
+                "type" => "image/png"
+            ],
+            [
+                "src" => "/icons/icon-512x512.png",
+                "sizes" => "512x512",
+                "type" => "image/png"
+            ]
+        ]
+    ])->header('Content-Type', 'application/json');
+});
+
+// Route untuk favicon
+Route::get('/favicon.ico', function () {
+    return response()->file(public_path('favicon.ico'));
+})->name('favicon');
+
+// Route utama
+Route::get('/', function () {
+    if (auth()->check()) {
+        return redirect('/admin/dashboard');
+    }
+    return redirect('/login');
 });

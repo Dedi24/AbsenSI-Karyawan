@@ -15,16 +15,31 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
+        $user = Auth::user();
+
+        $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            $user = Auth::user();
-
+            if (Auth::user()->isAdmin()) {
+                return redirect()->intended(route('admin.dashboard'));
+            } elseif (Auth::user()->isKaryawan()) {
+                return redirect()->intended(route('karyawan.dashboard'));
+            }
+        }
+        
+        return back()->withErrors([
+            'email' => 'Email atau password salah.',
+            ])->onlyInput('email');
+        }
+        
+        protected function generateDeviceFingerprint(Request $request)
+        {
+            $userAgent = $request->userAgent();
+            $ipAddress = $request->ip();
+            $acceptLanguage = $request->header('Accept-Language');
+            
             // Update device fingerprint dan login info
             $deviceFingerprint = $this->generateDeviceFingerprint($request);
             $user->update([
@@ -33,24 +48,6 @@ class LoginController extends Controller
                 'device_fingerprint' => $user->device_fingerprint ?? $deviceFingerprint
             ]);
 
-            if (Auth::user()->isAdmin()) {
-                return redirect()->intended(route('admin.dashboard'));
-            } elseif (Auth::user()->isKaryawan()) {
-                return redirect()->intended(route('karyawan.dashboard'));
-            }
-        }
-
-        return back()->withErrors([
-            'email' => 'Email atau password salah.',
-        ])->onlyInput('email');
-    }
-
-    protected function generateDeviceFingerprint(Request $request)
-    {
-        $userAgent = $request->userAgent();
-        $ipAddress = $request->ip();
-        $acceptLanguage = $request->header('Accept-Language');
-        
         $deviceInfo = $userAgent . $ipAddress . $acceptLanguage;
         return hash('sha256', $deviceInfo);
     }
@@ -61,5 +58,11 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect('/');
+    }
+
+    // Method untuk menangani offline
+    public function offline()
+    {
+        return view('pwa.offline');
     }
 }

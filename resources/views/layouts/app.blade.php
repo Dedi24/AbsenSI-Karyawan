@@ -46,13 +46,13 @@
             --light-color: #f8f9fc;
             --dark-color: #5a5c69;
             /* Warna Sidebar */
-            --sidebar-bg: var(--primary-color);
+            --sidebar-bg:  #1598d4 0%, #179c55 100%;
             --sidebar-color: rgba(255, 255, 255, 0.8);
             --sidebar-hover-bg: rgba(255, 255, 255, 0.1);
             --sidebar-active-bg: rgba(255, 255, 255, 0.2);
             --sidebar-border-color: rgba(255, 255, 255, 0.15);
             /* Warna Topbar */
-            --topbar-bg: #ffffff;
+            --topbar-bg: hsl(0, 10%, 94%);
             --topbar-color: var(--dark-color);
             --topbar-border-color: rgba(0, 0, 0, 0.1);
             /* Shadow dan Transition */
@@ -67,15 +67,15 @@
         /* Dark Theme Variables */
         [data-bs-theme="dark"] {
             --sidebar-bg: #1a1d20;
-            --sidebar-color: rgba(255, 255, 255, 0.85);
+            --sidebar-color: rgba(131, 128, 128, 0.85);
             --sidebar-hover-bg: rgba(255, 255, 255, 0.1);
             --sidebar-active-bg: rgba(255, 255, 255, 0.2);
             --sidebar-border-color: rgba(255, 255, 255, 0.1);
             --topbar-bg: #2b3035;
-            --topbar-color: rgba(255, 255, 255, 0.85);
+            --topbar-color: rgba(235, 232, 232, 0.85);
             --topbar-border-color: rgba(255, 255, 255, 0.1);
             --light-color: #1e2227;
-            --dark-color: rgba(255, 255, 255, 0.85);
+            --dark-color: rgba(32, 30, 30, 0.85);
         }
         body {
             font-size: 0.875rem;
@@ -88,7 +88,7 @@
         }
         /* Topbar Styling */
         .topbar {
-            height: 50px;
+            height: 60px;
             background-color: var(--topbar-bg);
             color: var(--topbar-color);
             border-bottom: 1px solid var(--topbar-border-color);
@@ -128,13 +128,11 @@
         }
         /* Sidebar Styling */
         .sidebar {
-            width: 150px;
-            background: linear-gradient(180deg, var(--sidebar-bg) 0%, #2285be 100%);
+            width: 250px;
+            background: linear-gradient(180deg, var(--sidebar-bg) 0%, #224abe 100%);
             color: var(--sidebar-color);
             min-height: calc(100vh - 60px);
-            transistion:var(--transition-fast);
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
-            border-right: 1px solid var(--sidebar-border-color);
+            transition: var(--transition-normal);
             box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.15);
             position: fixed;
             top: 60px;
@@ -180,7 +178,6 @@
             background-color: #fff;
         }
         .sidebar-heading {
-            -o-object-position: 3%
             padding: 0.75rem 1rem;
             font-size: 0.75rem;
             font-weight: 600;
@@ -196,16 +193,12 @@
             color: var(--sidebar-color);
             text-decoration: none;
             border-top: 1px solid var(--sidebar-border-color);
-            margin-top: auto;
+            margin-top: var(--sidebar-active-bg);
             transition: var(--transition-fast);
-            position: relative !important;
-            bottom: 5%;
-            left: 2%;
+            position: absolute;
+            bottom: -42%;
             width: 100%;
             left: 0;
-            right: 0;
-            margin-left: 0;
-            margin-right: 0;
         }
         .sidebar .user-info:hover {
             background-color: var(--sidebar-hover-bg);
@@ -218,7 +211,6 @@
             border-radius: 50%;
             background-color: #fff;
             color: var(--sidebar-bg);
-            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -226,6 +218,10 @@
             font-size: 0.8rem;
             margin-right: 0.75rem;
             transition: var(--transition-fast);
+        }
+        [data-bs-theme="dark"] .user-avatar {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--sidebar-color);
         }
         .sidebar .user-info:hover .user-avatar {
             transform: scale(1.1);
@@ -432,7 +428,7 @@
         .bg-dark { background-color: var(--dark-color) !important; }
         /* Avatar */
         .avatar {
-            position: flex;
+            position: relative;
             display: inline-block;
         }
         .avatar-content {
@@ -489,7 +485,7 @@
         }
         .login-right {
             padding: 3rem;
-            background: rgb(239, 237, 237);
+            background: white;
         }
         .feature-item {
             display: flex;
@@ -540,7 +536,7 @@
             box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.3);
         }
         .modal-header {
-            background: linear-gradient(135deg, #1598d4 0%, #179c55 100%);
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
             color: white;
             border-radius: 1rem 1rem 0 0 !important;
         }
@@ -677,10 +673,10 @@
                         <!-- Dropdown - User Information -->
                         <div class="dropdown-menu dropdown-menu-end shadow animated--grow-in"
                             aria-labelledby="userDropdown">
-                            <a class="dropdown-item" href="#">
+                            <a class="dropdown-item" href="{{ route('admin.profile.show') }}">
                                 <i class="bi bi-person-circle me-2"></i> Profil
                             </a>
-                            <a class="dropdown-item" href="#">
+                            <a class="dropdown-item" href="{{ route('admin.settings.index') }}">
                                 <i class="bi bi-gear me-2"></i> Pengaturan
                             </a>
                             <div class="dropdown-divider"></div>
@@ -703,7 +699,6 @@
                 </ul>
             </div>
         </nav>
-        
         <!-- Sidebar -->
         <nav id="sidebar" class="sidebar">
             <div class="position-sticky pt-3">
@@ -717,8 +712,8 @@
                     
                     <!-- Menu khusus untuk karyawan -->
                     @if(Auth::user()->role === 'karyawan')
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('admin.absensis.*') ? 'active' : '' }}" 
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.absensis.*') ? 'active' : '' }}" 
                                href="{{ route('admin.absensis.index') }}">
                                 <i class="bi bi-calendar-check"></i> <span>Absensi</span>
                             </a>
@@ -728,30 +723,35 @@
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.employees.*') ? 'active' : '' }}" 
                                href="{{ route('admin.employees.index') }}">
-                                <i class="bi bi-people"></i> <span>Karyawan</span>
+                               <i class="bi bi-people"></i> <span>Karyawan</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.absensis.*') ? 'active' : '' }}" 
-                               href="{{ route('admin.absensis.index') }}">
+                                href="{{ route('admin.absensis.index') }}">
                                 <i class="bi bi-calendar-check"></i> <span>Absensi</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}" 
-                               href="{{ route('admin.reports.index') }}">
+                                href="{{ route('admin.reports.index') }}">
                                 <i class="bi bi-file-earmark-bar-graph"></i> <span>Laporan</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}" 
-                               href="{{ route('admin.settings.index') }}">
+                                href="{{ route('admin.settings.index') }}">
                                 <i class="bi bi-gear"></i> <span>Pengaturan</span>
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="{{ route('pwa.offline') }}">
+                                <i class="bi bi-wifi-off"></i> <span>Offline Mode</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.logs.*') ? 'active' : '' }}" 
-                               href="{{ route('admin.logs.index') }}">
+                                href="{{ route('admin.logs.index') }}">
                                 <i class="bi bi-journal-text"></i> <span>Log Aktivitas</span>
                             </a>
                         </li>
@@ -759,22 +759,16 @@
                 </ul>
                 
                 <!-- User Info at Bottom of Sidebar -->
-                <footer class="sidebar-footer mt-auto">
-                    <div class="user-info">
-                        <div class="user-avatar">
-                            {{ substr(Auth::user()->name ?? 'U', 0, 1) }}
-                        </div>
-                        <div class="user-info-text">
-                            <div class="small text-muted">
-                                {{ Auth::user()->role === 'admin' ? 'Admin' : 'Karyawan' }}
-                            </div>
-                            <div>{{ Auth::user()->name ?? 'User' }}</div>
-                        </div>
+                <div class="user-info">
+                    <div class="user-avatar">
+                        {{ substr(Auth::user()->name ?? 'U', 0, 1) }}
                     </div>
-                </footer>
+                    <div class="user-info-text small text-gray-500">
+                        <span class="d-block">{{ Auth::user()->name ?? 'User' }}</span>
+                    </div>
+                </div>
             </div>
         </nav>
-        
         <!-- Main Content -->
         <div class="main-content">
             <div class="container-fluid pt-4 px-4">
@@ -790,13 +784,12 @@
             </footer>
         </div>
         
-        <!-- PWA Install Alert hanya untuk user yang login -->
+        <!-- PWA Install Alert -->
         <div class="install-pwa d-none" id="installPWABtn">
             <button class="btn btn-success btn-lg pulse" id="installPWA">
                 <i class="bi bi-download"></i> Install App
             </button>
         </div>
-        
     @else
         <!-- Login Page - Shown when NOT logged in -->
         @yield('content')
@@ -866,6 +859,7 @@
             // Theme toggle functionality
             const themeToggle = document.getElementById('themeToggle');
             const themeIcon = document.getElementById('themeIcon');
+            
             // --- Theme Toggle ---
             // Check for saved theme or respect system preference
             const savedTheme = localStorage.getItem('theme');
@@ -891,6 +885,7 @@
                     themeIcon.title = 'Switch to Dark Mode';
                 }
             }
+            
             // --- Sidebar Toggle (Mobile) ---
             if (sidebarToggleTop && sidebar) {
                 sidebarToggleTop.addEventListener('click', function () {
@@ -900,6 +895,7 @@
                     }
                 });
             }
+            
             // Close sidebar when clicking overlay
             if (sidebarOverlay) {
                 sidebarOverlay.addEventListener('click', function () {
@@ -907,6 +903,7 @@
                     sidebarOverlay.classList.remove('show');
                 });
             }
+            
             // --- Auto-hide alerts ---
             const alerts = document.querySelectorAll('.alert');
             alerts.forEach(function(alert) {
@@ -915,6 +912,7 @@
                     bsAlert.close();
                 }, 5000); // Hide after 5 seconds
             });
+            
             // --- PWA Integration ---
             let deferredPrompt;
             const installPWAButton = document.getElementById('installPWA');
@@ -923,6 +921,10 @@
             
             // Check if user has seen the modal before (using localStorage)
             const hasSeenModal = localStorage.getItem('pwa_instructions_seen');
+            
+            // Check if app is already installed (standalone mode)
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                                window.navigator.standalone === true;
             
             // Register Service Worker
             if ('serviceWorker' in navigator) {
@@ -941,16 +943,10 @@
             window.addEventListener('beforeinstallprompt', (e) => {
                 e.preventDefault();
                 deferredPrompt = e;
-                installPWABtn.classList.remove('d-none');
                 
-                // Show modal only if user hasn't seen it before and is not on mobile
-                if (!hasSeenModal && !/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-                    // Show modal after a short delay
-                    setTimeout(() => {
-                        const modal = new bootstrap.Modal(pwaInstructionsModal);
-                        modal.show();
-                        localStorage.setItem('pwa_instructions_seen', 'true');
-                    }, 1000);
+                // Only show install button if not already installed and user hasn't seen modal
+                if (!isStandalone && !hasSeenModal) {
+                    installPWABtn.classList.remove('d-none');
                 }
             });
             
@@ -960,6 +956,8 @@
                     deferredPrompt.userChoice.then((choiceResult) => {
                         if (choiceResult.outcome === 'accepted') {
                             console.log('User accepted the A2HS prompt');
+                            // Set flag that user has seen the modal
+                            localStorage.setItem('pwa_instructions_seen', 'true');
                         } else {
                             console.log('User dismissed the A2HS prompt');
                         }
@@ -972,12 +970,16 @@
                 console.log('PWA was installed');
                 installPWABtn.classList.add('d-none');
                 deferredPrompt = null;
+                // Set flag that user has installed the app
+                localStorage.setItem('pwa_installed', 'true');
+                localStorage.setItem('pwa_instructions_seen', 'true');
             });
             
-            // Show PWA instructions modal
+            // Show PWA instructions modal only if not installed and not seen before
             const showPWAInstructions = () => {
                 const modal = new bootstrap.Modal(document.getElementById('pwaInstructionsModal'));
                 modal.show();
+                localStorage.setItem('pwa_instructions_seen', 'true');
             };
             
             // Add click event to install button
@@ -987,16 +989,51 @@
             
             // Check if we're on a mobile device
             const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            if (!isMobile && !hasSeenModal) {
+            if (!isMobile && !hasSeenModal && !isStandalone) {
                 // Show PWA instructions for desktop users after a delay
                 setTimeout(() => {
                     if (installPWABtn.classList.contains('d-none')) {
                         showPWAInstructions();
-                        localStorage.setItem('pwa_instructions_seen', 'true');
                     }
                 }, 3000);
             }
+            
+            // Check if app is running in standalone mode and hide install button
+            if (isStandalone) {
+                installPWABtn.classList.add('d-none');
+            }
         });
+        // <!-- Tambahkan ini di bagian script sebelum closing -->
+        @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                // Check if app is already installed (standalone mode)
+                const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                                    window.navigator.standalone === true;
+                
+                // Check if user has seen the modal before
+                const hasSeenModal = localStorage.getItem('pwa_instructions_seen');
+                
+                // Hide PWA install button if app is already installed
+                const installPWABtn = document.getElementById('installPWABtn');
+                if (isStandalone || hasSeenModal) {
+                    if (installPWABtn) {
+                        installPWABtn.classList.add('d-none');
+                    }
+                }
+                
+                // Also hide the modal trigger if already installed
+                const pwaInstructionsModal = document.getElementById('pwaInstructionsModal');
+                if (isStandalone && pwaInstructionsModal) {
+                    // Remove the modal trigger from login page
+                    const modalTrigger = document.querySelector('[data-bs-target="#pwaInstructionsModal"]');
+                    if (modalTrigger) {
+                        modalTrigger.style.display = 'none';
+                    }
+                }
+            });
+        </script>
+        @endpush
     </script>
     @yield('scripts')
 </body>
