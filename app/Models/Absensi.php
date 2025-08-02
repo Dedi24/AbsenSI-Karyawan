@@ -14,13 +14,16 @@ class Absensi extends Model
         'date',
         'check_in',
         'check_out',
-        'status',
+        'status', // hadir, alpha, izin, sakit
         'location_in',
         'location_out',
+        'keterangan', // untuk izin/sakit
     ];
 
     protected $casts = [
         'date' => 'date',
+        'check_in' => 'datetime:H:i:s',
+        'check_out' => 'datetime:H:i:s',
     ];
 
     public function user()
@@ -28,10 +31,10 @@ class Absensi extends Model
         return $this->belongsTo(User::class);
     }
 
-   // Accessor untuk mendapatkan jam kerja
+    // Accessor untuk mendapatkan jam kerja
     public function getWorkingHoursAttribute()
     {
-        if ($this->check_in && $this->check_out) {
+        if ($this->check_in && $this->check_out && $this->status === 'hadir') {
             try {
                 $in = \Carbon\Carbon::createFromFormat('H:i:s', $this->check_in);
                 $out = \Carbon\Carbon::createFromFormat('H:i:s', $this->check_out);
@@ -43,7 +46,7 @@ class Absensi extends Model
         return 0;
     }
 
-    // Accessor untuk format waktu masuk (Indonesia)
+    // Accessor untuk format waktu masuk
     public function getCheckInFormattedAttribute()
     {
         if ($this->check_in) {
@@ -56,7 +59,7 @@ class Absensi extends Model
         return '-';
     }
 
-    // Accessor untuk format waktu pulang (Indonesia)
+    // Accessor untuk format waktu pulang
     public function getCheckOutFormattedAttribute()
     {
         if ($this->check_out) {
@@ -87,4 +90,21 @@ class Absensi extends Model
         return \Carbon\Carbon::parse($this->date)->isoFormat('dddd');
     }
 
+    // Scope untuk filter berdasarkan status
+    public function scopeByStatus($query, $status)
+    {
+        return $query->where('status', $status);
+    }
+
+    // Scope untuk filter berdasarkan tanggal
+    public function scopeByDate($query, $date)
+    {
+        return $query->where('date', $date);
+    }
+
+    // Scope untuk filter berdasarkan range tanggal
+    public function scopeByDateRange($query, $startDate, $endDate)
+    {
+        return $query->whereBetween('date', [$startDate, $endDate]);
+    }
 }
