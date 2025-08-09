@@ -542,29 +542,67 @@ document.addEventListener('DOMContentLoaded', function() {
     // Get location button
     const getLocationBtn = document.getElementById('getLocationBtn');
     if (getLocationBtn) {
-        getLocationBtn.addEventListener('click', function() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    const latitude = position.coords.latitude;
-                    const longitude = position.coords.longitude;
-                    document.getElementById('office_location').value = `${latitude.toFixed(6)},${longitude.toFixed(6)}`;
-                    
-                    // Show success message
+        getLocationBtn.addEventListener('click', function () {
+            if (!navigator.geolocation) {
+                alert('Geolocation tidak didukung oleh browser Anda.');
+                return;
+            }
+
+            // Tampilkan loading
+            const originalText = getLocationBtn.innerHTML;
+            getLocationBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Mendapatkan lokasi...';
+            getLocationBtn.disabled = true;
+
+            navigator.geolocation.getCurrentPosition(
+                function (position) {
+                    const lat = position.coords.latitude.toFixed(6);
+                    const lng = position.coords.longitude.toFixed(6);
+                    const locationInput = document.getElementById('office_location');
+                    locationInput.value = `${lat},${lng}`;
+
+                    // Tampilkan alert sukses
                     const alertDiv = document.createElement('div');
                     alertDiv.className = 'alert alert-success alert-dismissible fade show mt-2';
                     alertDiv.innerHTML = `
-                        <i class="bi bi-check-circle"></i> Lokasi berhasil didapatkan!
+                        <i class="bi bi-check-circle"></i> Lokasi berhasil didapatkan: <strong>${lat}, ${lng}</strong>
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     `;
                     document.getElementById('location').insertBefore(alertDiv, document.getElementById('location').firstChild);
-                }, function(error) {
-                    alert('Gagal mendapatkan lokasi: ' + error.message);
-                });
-            } else {
-                alert('Geolocation tidak didukung oleh browser Anda.');
-            }
+
+                    // Reset tombol
+                    getLocationBtn.innerHTML = originalText;
+                    getLocationBtn.disabled = false;
+                },
+                function (error) {
+                    let message = '';
+                    switch (error.code) {
+                        case error.PERMISSION_DENIED:
+                            message = 'Pengguna menolak permintaan lokasi.';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            message = 'Informasi lokasi tidak tersedia.';
+                            break;
+                        case error.TIMEOUT:
+                            message = 'Permintaan lokasi timeout.';
+                            break;
+                        default:
+                            message = 'Gagal mendapatkan lokasi: ' + error.message;
+                    }
+
+                    alert(message);
+
+                    // Reset tombol
+                    getLocationBtn.innerHTML = originalText;
+                    getLocationBtn.disabled = false;
+                }, {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 60000
+                }
+            );
         });
     }
+
     
     // Test WhatsApp button
     const testWhatsAppBtn = document.getElementById('testWhatsAppBtn');

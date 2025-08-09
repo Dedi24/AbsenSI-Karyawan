@@ -9,98 +9,81 @@ class Setting extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'key',
-        'value',
-    ];
+    protected $table = 'settings';
+    public $timestamps = false;
 
-    protected $casts = [
-        'value' => 'array',
-    ];
+    protected $fillable = ['key', 'value'];
 
-    public static function get($key, $default = null)
+    // ----------------------------------
+    // 🔹 STATIC GETTER METHODS
+    // ----------------------------------
+
+    public static function getValue($key, $default = null)
     {
-        $setting = self::where('key', $key)->first();
-        if ($setting) {
-            // Handle jika value adalah string JSON
-            if (is_string($setting->value)) {
-                $decoded = json_decode($setting->value, true);
-                return $decoded !== null ? $decoded : $setting->value;
-            }
-            return $setting->value;
-        }
-        return $default;
+        return static::where('key', $key)->value('value') ?? $default;
     }
 
-    public static function set($key, $value)
-    {
-        return self::updateOrCreate(
-            ['key' => $key],
-            ['value' => is_array($value) ? json_encode($value) : $value]
-        );
-    }
-
-    // Method helper untuk mendapatkan waktu kerja
-    public static function getWorkStartTime()
-    {
-        $time = self::get('work_start_time', '08:00:00');
-        return is_string($time) ? $time : '08:00:00';
-    }
-
-    public static function getWorkEndTime()
-    {
-        $time = self::get('work_end_time', '17:00:00');
-        return is_string($time) ? $time : '17:00:00';
-    }
-
-    // Method helper untuk mendapatkan pengaturan lainnya
     public static function getCompanyName()
     {
-        return self::get('company_name', 'Perusahaan Kita');
+        return self::getValue('company_name', 'Perusahaan Saya');
     }
 
     public static function getCompanyAddress()
     {
-        return self::get('company_address', 'Jl. Perusahaan No. 123, Kota, Provinsi');
+        return self::getValue('company_address');
     }
 
     public static function getCompanyEmail()
     {
-        return self::get('company_email', 'info@perusahaan.com');
+        return self::getValue('company_email');
     }
 
     public static function getCompanyPhone()
     {
-        return self::get('company_phone', '+62 812 3456 7890');
+        return self::getValue('company_phone');
     }
 
     public static function getCompanyLogo()
     {
-        return self::get('company_logo', '/images/company-logo.png');
+        $logo = self::getValue('company_logo');
+        return $logo ?: '/images/logo-default.png';
+    }
+
+    // 🔹 Jam Kerja
+    public static function getWorkStartTime()
+    {
+        return self::getValue('work_start_time', '08:00:00');
+    }
+
+    public static function getWorkEndTime()
+    {
+        return self::getValue('work_end_time', '17:00:00');
     }
 
     public static function getTimezone()
     {
-        return self::get('timezone', 'Asia/Jakarta');
+        return self::getValue('timezone', 'Asia/Jakarta');
     }
 
     public static function getTimeFormat()
     {
-        return self::get('time_format', '24');
+        return self::getValue('time_format', '24');
     }
 
+    // 🔹 Lokasi
     public static function getOfficeLocation()
     {
-        return self::get('office_location', '-6.200000,106.816666');
+        return self::getValue('office_location', '-6.200000,106.816666');
     }
 
     public static function getToleranceRadius()
     {
-        return (int) self::get('tolerance_radius', 100);
+        return (int) self::getValue('tolerance_radius', 100);
     }
 
+    // 🔹 Notifikasi
     public static function getWhatsAppGroup()
     {
-        return self::get('whatsapp_group', '');
+        return self::getValue('whatsapp_group');
     }
 }

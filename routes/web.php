@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\EmployeeController;
 use App\Http\Controllers\Admin\AbsensiController as AdminAbsensiController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SettingController;
+
 use App\Http\Controllers\Karyawan\DashboardController as KaryawanDashboardController;
 use App\Http\Controllers\Karyawan\AbsensiController as KaryawanAbsensiController;
 use App\Http\Controllers\Karyawan\ProfileController as KaryawanProfileController;
@@ -24,8 +25,8 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 // Password Reset Routes
 Route::get('/password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
 Route::post('/password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
-Route::get('/password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
-Route::post('/password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
+// Route::get('/password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+// Route::post('/password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
 
 Route::middleware(['auth'])->group(function () {
     
@@ -49,12 +50,14 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
         Route::post('/reports/generate', [ReportController::class, 'generate'])->name('reports.generate');
         Route::get('/reports/export-all', [ReportController::class, 'exportAll'])->name('reports.export-all');
-        
+
         // Logs Routes - Tambahkan ini
         Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
-        Route::get('/logs/{log}', [LogController::class, 'show'])->name('logs.show');
-        Route::delete('/logs/{log}', [LogController::class, 'destroy'])->name('logs.destroy');
+        Route::get('/logs/{filename}', [LogController::class, 'show'])->name('logs.show');
+        Route::get('/logs/download/{filename}', [LogController::class, 'download'])->name('logs.download'); // ✅ Tambahkan ini
+        Route::delete('/logs/{filename}', [LogController::class, 'destroy'])->name('logs.destroy');
         Route::post('/logs/clear', [LogController::class, 'clear'])->name('logs.clear');
+
 
         // Settings Routes
         Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
@@ -63,6 +66,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Karyawan Routes
     Route::middleware(['role:karyawan'])->prefix('karyawan')->name('karyawan.')->group(function () {
+        // Route::get('/karyawan/dashboard', [KaryawanController::class, 'dashboard']);
         Route::get('/dashboard', [KaryawanDashboardController::class, 'index'])->name('dashboard');
         Route::get('/absensi', [KaryawanAbsensiController::class, 'index'])->name('absensi.index');
         Route::get('/absensi/qr-code', [KaryawanAbsensiController::class, 'qrCode'])->name('absensi.qr-code');

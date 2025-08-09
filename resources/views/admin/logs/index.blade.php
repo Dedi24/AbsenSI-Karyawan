@@ -1,16 +1,16 @@
 @extends('layouts.app')
 
-@section('title', 'System Logs')
+@section('title', 'Log Aktivitas Sistem')
 
 @section('content')
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">📝 System Logs</h1>
+    <h1 class="h2">📝 Log Aktivitas Sistem</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group me-2">
-            <button class="btn btn-outline-danger" onclick="confirmClearLogs()">
-                <i class="bi bi-trash"></i> Clear All Logs
+            <button type="button" class="btn btn-outline-danger" onclick="confirmClearLogs()">
+                <i class="bi bi-trash"></i> Hapus Semua
             </button>
-            <button class="btn btn-outline-secondary" onclick="location.reload()">
+            <button type="button" class="btn btn-outline-secondary" onclick="location.reload()">
                 <i class="bi bi-arrow-clockwise"></i> Refresh
             </button>
         </div>
@@ -20,14 +20,14 @@
 @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         <i class="bi bi-check-circle"></i> {{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 @endif
 
 @if(session('error'))
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
         <i class="bi bi-exclamation-triangle"></i> {{ session('error') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 @endif
 
@@ -36,13 +36,13 @@
         <div class="card shadow mb-4">
             <div class="card-header py-3 d-flex justify-content-between align-items-center">
                 <h6 class="m-0 font-weight-bold text-primary">
-                    <i class="bi bi-file-earmark-text"></i> Log Files
+                    <i class="bi bi-journal-text"></i> File Log Sistem
                 </h6>
                 <div class="text-muted small">
                     Menampilkan {{ count($logFiles) }} file log
                 </div>
             </div>
-            
+
             <div class="card-body">
                 @if(count($logFiles) > 0)
                     <div class="table-responsive">
@@ -50,9 +50,9 @@
                             <thead class="thead-dark">
                                 <tr>
                                     <th class="text-center" width="5%">No</th>
-                                    <th>Filename</th>
-                                    <th class="text-center" width="15%">Size</th>
-                                    <th class="text-center" width="20%">Last Modified</th>
+                                    <th>Nama File</th>
+                                    <th class="text-center" width="15%">Ukuran</th>
+                                    <th class="text-center" width="20%">Dimodifikasi</th>
                                     <th class="text-center" width="15%">Aksi</th>
                                 </tr>
                             </thead>
@@ -90,28 +90,27 @@
                                     </td>
                                     <td class="text-center">
                                         <div class="btn-group btn-group-sm" role="group">
-                                            <a href="{{ route('admin.logs.show', $logFile['name']) }}" 
-                                               class="btn btn-outline-primary" data-bs-toggle="tooltip" title="View Log">
+                                            <button type="button" 
+                                                    class="btn btn-outline-primary" 
+                                                    onclick="viewLog('{{ $logFile['name'] }}')"
+                                                    data-bs-toggle="tooltip" 
+                                                    title="Lihat Log">
                                                 <i class="bi bi-eye"></i>
-                                            </a>
-                                            <a href="{{ route('admin.logs.show', $logFile['name']) }}" 
-                                               class="btn btn-outline-info" data-bs-toggle="tooltip" title="Download Log">
+                                            </button>
+                                            <a href="{{ route('admin.logs.download', $logFile['name']) }}" 
+                                               class="btn btn-outline-info"
+                                               data-bs-toggle="tooltip" 
+                                               title="Download Log">
                                                 <i class="bi bi-download"></i>
                                             </a>
-                                            <button type="button" class="btn btn-outline-danger" 
-                                                    onclick="confirmDeleteLog('{{ $logFile['name'] }}')" 
-                                                    data-bs-toggle="tooltip" title="Delete Log">
+                                            <button type="button" 
+                                                    class="btn btn-outline-danger" 
+                                                    onclick="confirmDeleteLog('{{ $logFile['name'] }}')"
+                                                    data-bs-toggle="tooltip" 
+                                                    title="Hapus Log">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </div>
-                                        
-                                        <!-- Hidden form for delete -->
-                                        <form id="delete-log-form-{{ $index }}" 
-                                              action="{{ route('admin.logs.destroy', $logFile['name']) }}" 
-                                              method="POST" style="display: none;">
-                                            @csrf
-                                            @method('DELETE')
-                                        </form>
                                     </td>
                                 </tr>
                                 @endforeach
@@ -130,26 +129,26 @@
     </div>
 </div>
 
-<!-- Log Viewer Modal -->
+<!-- Modal: Lihat Isi Log -->
 <div class="modal fade" id="logViewerModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title">
-                    <i class="bi bi-file-earmark-code"></i> Log Viewer
+                    <i class="bi bi-file-earmark-code"></i> <span id="modal-log-filename">Log Viewer</span>
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div id="logContent" style="max-height: 60vh; overflow-y: auto; font-family: monospace; font-size: 0.875rem; white-space: pre-wrap;">
-                    <!-- Log content will be loaded here -->
+                <div id="logContent" style="max-height: 60vh; overflow-y: auto; font-family: monospace; font-size: 0.875rem; white-space: pre-wrap; line-height: 1.4;">
+                    <!-- Konten log akan dimuat di sini -->
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     <i class="bi bi-arrow-left"></i> Tutup
                 </button>
-                <button type="button" class="btn btn-primary" onclick="downloadLog()">
+                <button type="button" class="btn btn-primary" onclick="downloadCurrentLog()">
                     <i class="bi bi-download"></i> Download
                 </button>
             </div>
@@ -157,99 +156,91 @@
     </div>
 </div>
 
-<!-- Hidden form for clear logs -->
-<form id="clear-logs-form" 
-      action="{{ route('admin.logs.clear') }}" 
-      method="POST" style="display: none;">
+<!-- Hidden Form: Hapus Semua Log -->
+<form id="clear-logs-form" action="{{ route('admin.logs.clear') }}" method="POST" style="display: none;">
     @csrf
     @method('POST')
 </form>
 @endsection
 
 @section('scripts')
-<style>
-.card {
-    border: none;
-    border-radius: 0.5rem;
-}
-
-.card-header {
-    background-color: #f8f9fc;
-    border-bottom: 1px solid #e3e6f0;
-    border-radius: 0.5rem 0.5rem 0 0 !important;
-}
-
-.shadow {
-    box-shadow: 0 .15rem 1.75rem 0 rgba(58, 59, 69, .15) !important;
-}
-
-.table-hover tbody tr:hover {
-    background-color: rgba(0, 0, 0, 0.02);
-}
-
-.avatar-sm {
-    width: 40px;
-    height: 40px;
-}
-
-.avatar-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    font-size: 0.875rem;
-}
-
-.log-row {
-    transition: all 0.2s ease;
-}
-
-.log-row.filtered-out {
-    display: none;
-}
-</style>
-
 <script>
-// Delete log confirmation
+// Lihat isi log
+function viewLog(filename) {
+    fetch(`{{ url('/admin/logs') }}/${filename}`)
+        .then(response => {
+            if (!response.ok) throw new Error('Gagal memuat file');
+            return response.text();
+        })
+        .then(data => {
+            document.getElementById('logContent').textContent = data;
+            document.getElementById('modal-log-filename').textContent = `Log: ${filename}`;
+            const modal = new bootstrap.Modal(document.getElementById('logViewerModal'));
+            modal.show();
+            // Simpan nama file untuk download
+            document.getElementById('logViewerModal').dataset.filename = filename;
+        })
+        .catch(error => {
+            alert('Gagal memuat log: ' + error.message);
+        });
+}
+
+// Hapus satu file log
 function confirmDeleteLog(filename) {
-    if (confirm(`⚠️ PERINGATAN!\n\nApakah Anda yakin ingin MENGHAPUS file log "${filename}"?\n\nTINDAKAN INI TIDAK DAPAT DIBATALKAN dan akan menghapus semua data log terkait.`)) {
-        document.getElementById(`delete-log-form-${filename}`).submit();
+    if (confirm(`⚠️ PERINGATAN!\n\nApakah Anda yakin ingin menghapus file log "${filename}"?\n\nTINDAKAN INI TIDAK DAPAT DIBATALKAN.`)) {
+        fetch(`{{ url('/admin/logs') }}/${filename}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Berhasil menghapus log: ' + filename);
+                location.reload();
+            } else {
+                alert('Gagal: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('Error: ' + error.message);
+        });
     }
 }
 
-// Clear all logs confirmation
+// Hapus semua log
 function confirmClearLogs() {
-    if (confirm(`⚠️ PERINGATAN!\n\nApakah Anda yakin ingin MENGHAPUS SEMUA file log?\n\nTINDAKAN INI TIDAK DAPAT DIBATALKAN dan akan menghapus semua data log sistem.`)) {
+    if (confirm(`⚠️ PERINGATAN!\n\nApakah Anda yakin ingin menghapus SEMUA file log?\n\nTINDAKAN INI TIDAK DAPAT DIBATALKAN.`)) {
         document.getElementById('clear-logs-form').submit();
     }
 }
 
-// View log content
-function viewLog(filename) {
-    fetch(`/admin/logs/${filename}`)
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById('logContent').textContent = data;
-            const logViewerModal = new bootstrap.Modal(document.getElementById('logViewerModal'));
-            logViewerModal.show();
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Gagal memuat konten log.');
-        });
+// Download log dari modal
+function downloadCurrentLog() {
+    const modal = document.getElementById('logViewerModal');
+    const filename = modal.dataset.filename;
+    const content = document.getElementById('logContent').textContent;
+
+    if (!filename || !content) {
+        alert('Tidak ada log untuk diunduh.');
+        return;
+    }
+
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
 }
 
-// Download log
-function downloadLog() {
-    // Implement download logic here
-    alert('Fitur download akan tersedia di versi berikutnya.');
-}
-
-// Initialize tooltips
-document.addEventListener('DOMContentLoaded', function() {
+// Inisialisasi tooltip
+document.addEventListener('DOMContentLoaded', function () {
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
 });
