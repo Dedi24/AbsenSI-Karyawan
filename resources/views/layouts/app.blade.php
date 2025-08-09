@@ -713,8 +713,8 @@
                     <!-- Menu khusus untuk karyawan -->
                     @if(Auth::user()->role === 'karyawan')
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.absensis.*') ? 'active' : '' }}" 
-                               href="{{ route('admin.absensis.index') }}">
+                        <a class="nav-link {{ request()->routeIs('karyawan.absensi.*') ? 'active' : '' }}" 
+                               href="{{ route('karyawan.absensi.index') }}">
                                 <i class="bi bi-calendar-check"></i> <span>Absensi</span>
                             </a>
                         </li>
@@ -778,7 +778,14 @@
             <footer class="sticky-footer bg-white mt-auto">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; {{ \App\Models\Setting::getCompanyName('Perusahaan Kita') }} {{ date('Y') }}</span>
+                        <span>
+                            Copyright &copy; 
+                            {{ $settings['company_name'] ?? setting('company_name', config('app.name', 'Absensi Karyawan')) }}
+                            <img src="{{ $settings['company_logo'] ?? setting('company_logo', '/images/logo-default.png') }}" 
+                                alt="Logo Perusahaan" 
+                                style="height: 20px; margin: 0 8px; border-radius: 3px;">
+                            {{ date('Y') }}
+                        </span>
                     </div>
                 </div>
             </footer>

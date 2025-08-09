@@ -1,152 +1,288 @@
 @extends('layouts.app')
 
-@section('title', 'Tambah Karyawan')
+@section('title', 'Tambah Karyawan Baru')
 
 @section('content')
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2">👤 Tambah Karyawan Baru</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group me-2">
-            <a href="{{ route('admin.employees.index') }}" class="btn btn-outline-secondary">
+            <a href="{{ route('admin.employees.index') }}" class="btn btn-sm btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Kembali
             </a>
         </div>
     </div>
 </div>
 
-@if($errors->any())
+@if ($errors->any())
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
         <i class="bi bi-exclamation-triangle"></i> Terdapat beberapa kesalahan dalam input:
         <ul class="mb-0 mt-2">
-            @foreach($errors->all() as $error)
+            @foreach ($errors->all() as $error)
                 <li>{{ $error }}</li>
             @endforeach
         </ul>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-@endif
-
-@if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="bi bi-check-circle"></i> {{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 @endif
 
 <div class="row">
-    <div class="col-md-8">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                <h6 class="m-0 font-weight-bold text-primary">
-                    <i class="bi bi-person-plus"></i> Formulir Tambah Karyawan
-                </h6>
-                <span class="badge bg-info">ID: Baru</span>
+    <div class="col-md-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0"><i class="bi bi-person-plus"></i> Formulir Karyawan Baru</h5>
             </div>
             <div class="card-body">
-                <form action="{{ route('admin.employees.store') }}" method="POST">
+                <form action="{{ route('admin.employees.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="name" class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="bi bi-person"></i>
-                                </span>
-                                <input type="text" class="form-control @error('name') is-invalid @enderror" 
-                                       id="name" name="name" value="{{ old('name') }}" 
-                                       placeholder="Masukkan nama lengkap" required>
+
+                    <ul class="nav nav-tabs" id="employeeTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="personal-tab" data-bs-toggle="tab" data-bs-target="#personal" type="button" role="tab">
+                                <i class="bi bi-person"></i> Data Pribadi
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="employment-tab" data-bs-toggle="tab" data-bs-target="#employment" type="button" role="tab">
+                                <i class="bi bi-briefcase"></i> Data Kepegawaian
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="account-tab" data-bs-toggle="tab" data-bs-target="#account" type="button" role="tab">
+                                <i class="bi bi-shield-lock"></i> Akun
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content mt-4" id="employeeTabsContent">
+                        <!-- Tab Data Pribadi -->
+                        <div class="tab-pane fade show active" id="personal" role="tabpanel" aria-labelledby="personal-tab">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="nik" class="form-label">NIK <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-hash"></i></span>
+                                        <input type="text" class="form-control @error('nik') is-invalid @enderror" id="nik" name="nik" value="{{ old('nik') }}" required>
+                                    </div>
+                                    @error('nik')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="name" class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                        <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name') }}" required>
+                                    </div>
+                                    @error('name')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                        <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" required>
+                                    </div>
+                                    @error('email')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="no_hp" class="form-label">No. HP</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                                        <input type="text" class="form-control @error('no_hp') is-invalid @enderror" id="no_hp" name="no_hp" value="{{ old('no_hp') }}">
+                                    </div>
+                                    @error('no_hp')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="tempat_lahir" class="form-label">Tempat Lahir</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                                        <input type="text" class="form-control @error('tempat_lahir') is-invalid @enderror" id="tempat_lahir" name="tempat_lahir" value="{{ old('tempat_lahir') }}">
+                                    </div>
+                                    @error('tempat_lahir')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="tanggal_lahir" class="form-label">Tanggal Lahir</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                                        <input type="date" class="form-control @error('tanggal_lahir') is-invalid @enderror" id="tanggal_lahir" name="tanggal_lahir" value="{{ old('tanggal_lahir') }}">
+                                    </div>
+                                    @error('tanggal_lahir')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="jenis_kelamin" class="form-label">Jenis Kelamin</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-gender-ambiguous"></i></span>
+                                        <select class="form-select @error('jenis_kelamin') is-invalid @enderror" id="jenis_kelamin" name="jenis_kelamin">
+                                            <option value="">-- Pilih --</option>
+                                            <option value="L" {{ old('jenis_kelamin') == 'L' ? 'selected' : '' }}>Laki-laki</option>
+                                            <option value="P" {{ old('jenis_kelamin') == 'P' ? 'selected' : '' }}>Perempuan</option>
+                                        </select>
+                                    </div>
+                                    @error('jenis_kelamin')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="status_perkawinan" class="form-label">Status Perkawinan</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-heart"></i></span>
+                                        <select class="form-select @error('status_perkawinan') is-invalid @enderror" id="status_perkawinan" name="status_perkawinan">
+                                            <option value="">-- Pilih --</option>
+                                            <option value="belum_kawin" {{ old('status_perkawinan') == 'belum_kawin' ? 'selected' : '' }}>Belum Kawin</option>
+                                            <option value="kawin" {{ old('status_perkawinan') == 'kawin' ? 'selected' : '' }}>Kawin</option>
+                                            <option value="cerai" {{ old('status_perkawinan') == 'cerai' ? 'selected' : '' }}>Cerai</option>
+                                        </select>
+                                    </div>
+                                    @error('status_perkawinan')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <label for="alamat" class="form-label">Alamat</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-house"></i></span>
+                                        <textarea class="form-control @error('alamat') is-invalid @enderror" id="alamat" name="alamat" rows="3">{{ old('alamat') }}</textarea>
+                                    </div>
+                                    @error('alamat')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="pendidikan_terakhir" class="form-label">Pendidikan Terakhir</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-mortarboard"></i></span>
+                                        <input type="text" class="form-control @error('pendidikan_terakhir') is-invalid @enderror" id="pendidikan_terakhir" name="pendidikan_terakhir" value="{{ old('pendidikan_terakhir') }}">
+                                    </div>
+                                    @error('pendidikan_terakhir')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
                             </div>
-                            @error('name')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
                         </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="bi bi-envelope"></i>
-                                </span>
-                                <input type="email" class="form-control @error('email') is-invalid @enderror" 
-                                       id="email" name="email" value="{{ old('email') }}" 
-                                       placeholder="email@perusahaan.com" required>
+
+                        <!-- Tab Data Kepegawaian -->
+                        <div class="tab-pane fade" id="employment" role="tabpanel" aria-labelledby="employment-tab">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="nip" class="form-label">NIP</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-hash"></i></span>
+                                        <input type="text" class="form-control @error('nip') is-invalid @enderror" id="nip" name="nip" value="{{ old('nip') }}">
+                                    </div>
+                                    @error('nip')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="jabatan" class="form-label">Jabatan</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-briefcase"></i></span>
+                                        <input type="text" class="form-control @error('jabatan') is-invalid @enderror" id="jabatan" name="jabatan" value="{{ old('jabatan') }}">
+                                    </div>
+                                    @error('jabatan')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="departemen" class="form-label">Departemen</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-diagram-3"></i></span>
+                                        <input type="text" class="form-control @error('departemen') is-invalid @enderror" id="departemen" name="departemen" value="{{ old('departemen') }}">
+                                    </div>
+                                    @error('departemen')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="tanggal_masuk" class="form-label">Tanggal Masuk</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-calendar-plus"></i></span>
+                                        <input type="date" class="form-control @error('tanggal_masuk') is-invalid @enderror" id="tanggal_masuk" name="tanggal_masuk" value="{{ old('tanggal_masuk') }}">
+                                    </div>
+                                    @error('tanggal_masuk')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="status" class="form-label">Status</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-flag"></i></span>
+                                        <select class="form-select @error('status') is-invalid @enderror" id="status" name="status">
+                                            <option value="active" {{ old('status', 'active') == 'active' ? 'selected' : '' }}>Active</option>
+                                            <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                        </select>
+                                    </div>
+                                    @error('status')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="role" class="form-label">Role</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-shield"></i></span>
+                                        <select class="form-select @error('role') is-invalid @enderror" id="role" name="role">
+                                            <option value="karyawan" {{ old('role', 'karyawan') == 'karyawan' ? 'selected' : '' }}>Karyawan</option>
+                                            <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                                        </select>
+                                    </div>
+                                    @error('role')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
                             </div>
-                            @error('email')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                        </div>
+
+                        <!-- Tab Akun -->
+                        <div class="tab-pane fade" id="account" role="tabpanel" aria-labelledby="account-tab">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                        <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" required>
+                                    </div>
+                                    @error('password')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                    <div class="form-text">
+                                        Password minimal 8 karakter.
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="password_confirmation" class="form-label">Konfirmasi Password <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                                        <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="photo" class="form-label">Foto Profil</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-image"></i></span>
+                                        <input type="file" class="form-control @error('photo') is-invalid @enderror" id="photo" name="photo" accept="image/*">
+                                    </div>
+                                    @error('photo')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                    <div class="form-text">
+                                        Format: JPG, PNG, GIF (Max 2MB)
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="bi bi-lock"></i>
-                                </span>
-                                <input type="password" class="form-control @error('password') is-invalid @enderror" 
-                                       id="password" name="password" 
-                                       placeholder="Minimal 8 karakter" required>
-                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
-                                    <i class="bi bi-eye"></i>
-                                </button>
-                            </div>
-                            @error('password')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                            <div class="form-text">
-                                <i class="bi bi-info-circle"></i> Password minimal 8 karakter
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label for="password_confirmation" class="form-label">Konfirmasi Password <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="bi bi-lock-fill"></i>
-                                </span>
-                                <input type="password" class="form-control" 
-                                       id="password_confirmation" name="password_confirmation" 
-                                       placeholder="Ulangi password" required>
-                                <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword">
-                                    <i class="bi bi-eye"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="role" class="form-label">Role <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="bi bi-shield"></i>
-                                </span>
-                                <select class="form-control @error('role') is-invalid @enderror" 
-                                        id="role" name="role" required>
-                                    <option value="">Pilih Role</option>
-                                    <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
-                                    <option value="karyawan" {{ old('role') == 'karyawan' ? 'selected' : '' }}>Karyawan</option>
-                                </select>
-                            </div>
-                            @error('role')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">&nbsp;</label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="sendWelcomeEmail" checked>
-                                <label class="form-check-label" for="sendWelcomeEmail">
-                                    Kirim email selamat datang ke karyawan
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="d-flex justify-content-between">
+
+                    <div class="d-flex justify-content-between mt-4">
                         <a href="{{ route('admin.employees.index') }}" class="btn btn-secondary">
                             <i class="bi bi-arrow-left"></i> Batal
                         </a>
@@ -158,150 +294,33 @@
             </div>
         </div>
     </div>
-    
-    <div class="col-md-4">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">
-                    <i class="bi bi-info-circle"></i> Informasi
-                </h6>
-            </div>
-            <div class="card-body">
-                <div class="alert alert-info">
-                    <h6><i class="bi bi-lightbulb"></i> Tips</h6>
-                    <ul class="mb-0">
-                        <li>Nama lengkap karyawan</li>
-                        <li>Email harus unik dan valid</li>
-                        <li>Password minimal 8 karakter</li>
-                        <li>Karyawan akan menerima email notifikasi</li>
-                    </ul>
-                </div>
-                
-                <div class="alert alert-warning">
-                    <h6><i class="bi bi-shield-lock"></i> Keamanan</h6>
-                    <p class="mb-0">
-                        Setelah dibuat, karyawan harus mengganti password saat login pertama kali.
-                    </p>
-                </div>
-                
-                <div class="text-center mt-3">
-                    <i class="bi bi-person-badge fa-3x text-primary mb-2"></i>
-                    <h5 class="mt-2">Karyawan Baru</h5>
-                    <p class="text-muted small">
-                        Formulir ini digunakan untuk menambahkan karyawan baru ke sistem.
-                    </p>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card shadow">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-success">
-                    <i class="bi bi-lightning"></i> Aksi Cepat
-                </h6>
-            </div>
-            <div class="card-body">
-                <div class="d-grid gap-2">
-                    <a href="{{ route('admin.employees.index') }}" class="btn btn-outline-primary">
-                        <i class="bi bi-people"></i> Lihat Semua Karyawan
-                    </a>
-                    <a href="{{ route('admin.absensis.index') }}" class="btn btn-outline-success">
-                        <i class="bi bi-calendar-check"></i> Absensi Hari Ini
-                    </a>
-                    <a href="{{ route('admin.settings.index') }}" class="btn btn-outline-warning">
-                        <i class="bi bi-gear"></i> Pengaturan Sistem
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 @endsection
 
 @section('scripts')
-<style>
-.card {
-    border: none;
-    border-radius: 0.5rem;
-}
-
-.card-header {
-    background-color: #f8f9fc;
-    border-bottom: 1px solid #e3e6f0;
-    border-radius: 0.5rem 0.5rem 0 0 !important;
-}
-
-.shadow {
-    box-shadow: 0 .15rem 1.75rem 0 rgba(58, 59, 69, .15) !important;
-}
-
-.input-group-text {
-    background-color: #f8f9fc;
-}
-
-.form-control:focus {
-    border-color: #4e73df;
-    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
-}
-
-.avatar-sm {
-    width: 40px;
-    height: 40px;
-}
-
-.avatar-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    font-size: 0.875rem;
-}
-
-.employee-row {
-    transition: all 0.2s ease;
-}
-
-.employee-row.filtered-out {
-    display: none;
-}
-</style>
-
 <script>
-// Password visibility toggle
-document.addEventListener('DOMContentLoaded', function() {
-    const passwordInput = document.getElementById('password');
-    const confirmPasswordInput = document.getElementById('password_confirmation');
-    const togglePassword = document.getElementById('togglePassword');
-    const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
-    
-    if (togglePassword) {
-        togglePassword.addEventListener('click', function() {
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
-            this.querySelector('i').className = type === 'password' ? 'bi bi-eye-slash' : 'bi bi-eye';
-        });
-    }
-    
-    if (toggleConfirmPassword) {
-        toggleConfirmPassword.addEventListener('click', function() {
-            const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            confirmPasswordInput.setAttribute('type', type);
-            this.querySelector('i').className = type === 'password' ? 'bi bi-eye-slash' : 'bi bi-eye';
-        });
-    }
-    
-    // Password confirmation
-    confirmPasswordInput.addEventListener('input', function() {
-        const password = document.getElementById('password').value;
-        const confirmPassword = this.value;
-        
-        if (password !== confirmPassword && confirmPassword !== '') {
-            this.classList.add('is-invalid');
-        } else {
-            this.classList.remove('is-invalid');
+    // Fokus ke tab dengan error
+    document.addEventListener('DOMContentLoaded', function () {
+        const errorFields = document.querySelectorAll('.is-invalid');
+        if (errorFields.length > 0) {
+            // Temukan tab pertama dengan error
+            let tabToShow = 'personal'; // default
+            errorFields.forEach(field => {
+                if (document.querySelector('#employment').contains(field)) {
+                    tabToShow = 'employment';
+                } else if (document.querySelector('#account').contains(field)) {
+                    tabToShow = 'account';
+                }
+            });
+
+            // Aktifkan tab yang sesuai
+            if (tabToShow !== 'personal') {
+                const triggerEl = document.querySelector(`[data-bs-target="#${tabToShow}"]`);
+                if (triggerEl) {
+                    bootstrap.Tab.getOrCreateInstance(triggerEl).show();
+                }
+            }
         }
     });
-});
 </script>
 @endsection

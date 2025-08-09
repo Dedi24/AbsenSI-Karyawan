@@ -40,6 +40,16 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        
+        'employee' => [
+            'driver' => 'session', // atau sanctum jika menggunakan API token
+            'provider' => 'employees',
+        ],
+        
+        'employee' => [
+            'driver' => 'session', // atau sanctum jika menggunakan API token
+            'provider' => 'employees',
+        ],
     ],
 
     /*
@@ -69,6 +79,11 @@ return [
         //     'driver' => 'database',
         //     'table' => 'users',
         // ],
+
+        'employees' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Employee::class, // Pastikan ini sesuai
+        ],
     ],
 
     /*
