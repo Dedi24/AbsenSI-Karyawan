@@ -67,5 +67,6 @@ class Kernel extends HttpKernel
         'role' => \App\Http\Middleware\RoleMiddleware::class,
         'device.fingerprint' => \App\Http\Middleware\DeviceFingerprintMiddleware::class,
         'role' => \App\Http\Middleware\EnsureUserRole::class,
+        'karyawan' => \App\Http\Middleware\EnsureKaryawanRole::class,
     ];
 }

@@ -26,6 +26,8 @@ class Absensi extends Model
         'check_out' => 'datetime:H:i:s',
     ];
 
+    protected $table = 'absensis';
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -106,5 +108,10 @@ class Absensi extends Model
     public function scopeByDateRange($query, $startDate, $endDate)
     {
         return $query->whereBetween('date', [$startDate, $endDate]);
+    }
+
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class, 'employee_id');
     }
 }

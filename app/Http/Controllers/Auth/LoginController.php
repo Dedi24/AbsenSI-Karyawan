@@ -19,13 +19,16 @@ class LoginController extends Controller
 
         $credentials = $request->only('email', 'password');
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
+        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+            $user = Auth::user();
 
-            if (Auth::user()->isAdmin()) {
-                return redirect()->intended(route('admin.dashboard'));
-            } elseif (Auth::user()->isKaryawan()) {
-                return redirect()->intended(route('karyawan.dashboard'));
+            if ($user->role === 'karyawan') {
+                return redirect()->intended('/karyawan/dashboard');
+            } elseif ($user->role === 'admin') {
+                return redirect()->intended('/admin/dashboard');
+            } else {
+                Auth::logout();
+                return back()->withErrors(['email' => 'Anda tidak memiliki akses.']);
             }
         }
         
@@ -33,6 +36,17 @@ class LoginController extends Controller
             'email' => 'Email atau password salah.',
             ])->onlyInput('email');
         }
+
+    protected function authenticated(Request $request, $user)
+    {
+        if ($user->role === 'admin') {
+            return redirect('/admin/dashboard');
+        } elseif ($user->role === 'karyawan') {
+            return redirect('/karyawan/dashboard');
+        }
+
+        return redirect('/');
+    }
         
         protected function generateDeviceFingerprint(Request $request)
         {
